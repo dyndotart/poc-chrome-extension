@@ -11,8 +11,8 @@ module.exports = {
     popup: path.resolve('./src/app/pages/popup/index.tsx'),
     options: path.resolve('./src/app/pages/options/index.tsx'),
     newTab: path.resolve('./src/app/pages/tabs/index.tsx'),
+    contentScript: path.resolve('./src/app/pages/embed/index.tsx'),
     background: path.resolve('./src/app/core/background/index.ts'),
-    contentScript: path.resolve('./src/app/core/contentScript/index.ts'),
   },
   module: {
     rules: [
@@ -78,9 +78,13 @@ module.exports = {
   },
   optimization: {
     // So that ReactJs is split between the chunks
-    // and not embedded into each chunk separately
+    // and not embedded into each chunk separately.
+    // Exception 'contentScript' as it is embedded into an actual web page
+    // and thus can't use the shared dom
     splitChunks: {
-      chunks: 'all',
+      chunks(chunk) {
+        return chunk.name !== 'contentScript';
+      },
     },
   },
 };
