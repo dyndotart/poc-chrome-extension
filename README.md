@@ -27,6 +27,9 @@ Events are browser triggers, such as navigating to a new page, removing a bookma
 
 Content scripts are files that run in the context of web pages. By using the standard Document Object Model (DOM), they are able to read details of the web pages the browser visits, make changes to them, and pass information to their parent extension.
 
+### Share Code between different parts of Chrome Extension
+- [Stackoverflow](https://stackoverflow.com/questions/24227874/can-i-share-code-between-different-parts-of-chrome-extension)
+
 ### Storage
 - [Tutorial](https://www.youtube.com/watch?v=XIyTH5Z_xy8&list=PLBS1L3Ug2VVods9GnWbJc__STt9VnrJ9Z&index=11)
 

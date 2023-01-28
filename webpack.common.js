@@ -8,11 +8,11 @@ const autoprefixer = require('autoprefixer');
 module.exports = {
   // Entry Points of Chunks (Chunks are separate areas of a Chrome Extension)
   entry: {
-    popup: path.resolve('./src/app/pages/popup/index.tsx'),
-    options: path.resolve('./src/app/pages/options/index.tsx'),
-    newTab: path.resolve('./src/app/pages/tabs/index.tsx'),
-    contentScript: path.resolve('./src/app/pages/embed/index.tsx'),
-    background: path.resolve('./src/app/core/background/index.ts'),
+    popup: path.resolve('./src/app/ui/popup/index.tsx'),
+    options: path.resolve('./src/app/ui/options/index.tsx'),
+    newTab: path.resolve('./src/app/ui/tabs/index.tsx'),
+    contentScript: path.resolve('./src/app/ui/embedded/index.tsx'),
+    background: path.resolve('./src/app/background/index.ts'),
   },
   module: {
     rules: [
@@ -66,7 +66,7 @@ module.exports = {
         },
       ],
     }),
-    // Loader Html of of Chunks (from React Component)
+    // Loader Html of UI chunks (from React Component)
     ...getHtmlPlugins(['popup', 'options', 'newTab']),
   ],
   resolve: {

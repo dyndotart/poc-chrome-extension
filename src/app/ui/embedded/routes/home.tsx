@@ -3,6 +3,7 @@ import { scrapListingDataFromDOM } from '../core';
 
 const Home: React.FC = () => {
   React.useEffect(() => {
+    console.log('Active URL', location.href);
     scrapListingDataFromDOM();
   });
   return (
