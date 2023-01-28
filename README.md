@@ -34,6 +34,8 @@ Content scripts are files that run in the context of web pages. By using the sta
 
 ### Storage
 - [Tutorial](https://www.youtube.com/watch?v=XIyTH5Z_xy8&list=PLBS1L3Ug2VVods9GnWbJc__STt9VnrJ9Z&index=11)
+- [SQLite in Chrome](https://developer.chrome.com/blog/sqlite-wasm-in-the-browser-backed-by-the-origin-private-file-system/)
+- [IndexDB](https://www.youtube.com/watch?v=bUSDQLEjW_M)
 
 ### Add custom extensions to Browser
 - First open `brave://extensions`
@@ -72,3 +74,5 @@ Instead of using normal URLs, the `HashRouter` uses the hash (`#`) portion of th
 
 # Resources
 - [ReactJS Chrome Extension using ReactJS 18 & Webpack 5](https://www.youtube.com/watch?v=rAZXWkVhCgg&list=PLBS1L3Ug2VVods9GnWbJc__STt9VnrJ9Z)
+- [NextJs Chrome Extension with Notion API](https://birdeatsbug.com/blog/build-a-chrome-extension-in-next-js-and-notion-api)
+- [Chrome Extension Boilerplate ReactJs](https://github.com/lxieyang/chrome-extension-boilerplate-react)

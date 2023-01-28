@@ -21,12 +21,18 @@ export async function scrapSearchedListingsDataFromDOM() {
         shopId,
         url: url.indexOf('?') != -1 ? url.split('?')[0] : url,
         title,
+        isLoved: false,
       };
+
+      // Check whether item has ranking data,
+      // if not it is in the 'loved' page section
       if (pageNum != null && positionNum != null) {
         data.ranking = {
           pageNum: +pageNum,
           positionNum: +positionNum,
         };
+      } else {
+        data.isLoved = true;
       }
 
       scrapedListingsData.push(data);
@@ -53,4 +59,5 @@ type TScrappedListingData = {
     positionNum: number;
   };
   title: string;
+  isLoved: boolean;
 };
