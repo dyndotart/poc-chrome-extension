@@ -3,6 +3,8 @@
 
 # 🔴 Issues
 
+### `Uncaught (in promise) Error: Could not establish connection. Receiving end does not exist.`
+- [Stackoverflow](https://stackoverflow.com/questions/71848934/uncaught-in-promise-error-could-not-establish-connection-receiving-end-does)
 
 ---
 
@@ -38,6 +40,10 @@ Content scripts are files that run in the context of web pages. By using the sta
 - Click `Load unpacked`
 - Open this project (root is `manifest.json`)
 
+### Can the background script only run for specific urls
+- [Stackoverflow](https://stackoverflow.com/questions/58649967/how-to-run-background-js-only-on-specific-links)
+- No it can't as it runs in a separate hidden background page
+
 ## Webpack
 - [Website](https://webpack.js.org/)
 - Webpack is a JavaScript module bundler.
@@ -61,7 +67,6 @@ Instead of using normal URLs, the `HashRouter` uses the hash (`#`) portion of th
 
 ## Etsy
 - https://www.youtube.com/watch?v=mzyiqXiscfU
-
 
 ---
 

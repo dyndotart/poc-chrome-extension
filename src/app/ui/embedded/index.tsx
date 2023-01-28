@@ -1,11 +1,12 @@
 import { createRoot } from 'react-dom/client';
 import { HashRouter } from 'react-router-dom';
 import Routes from './routes';
+import './core';
 
 // Styles
 import '../../styles/tailwind.css';
 
-function init() {
+function initReact() {
   const appContainer = document.createElement('div');
   document.body.appendChild(appContainer);
   if (!appContainer) {
@@ -17,6 +18,10 @@ function init() {
       <Routes />
     </HashRouter>
   );
+}
+
+function init() {
+  initReact();
 }
 
 init();
