@@ -19,7 +19,7 @@ module.exports = {
       // Typescript Loader
       {
         use: 'ts-loader',
-        test: /\.tsx$/,
+        test: /\.([cm]?ts|tsx)$/,
         exclude: /node_modules/,
       },
       // PostCSS & Tailwind Loader
@@ -70,7 +70,14 @@ module.exports = {
     ...getHtmlPlugins(['popup', 'options', 'newTab']),
   ],
   resolve: {
-    extensions: ['.tsx', '.ts', '.js'],
+    // Add `.ts` and `.tsx` as a resolvable extension.
+    extensions: ['.ts', '.tsx', '.js'],
+    // Add support for TypeScripts fully qualified ESM imports.
+    extensionAlias: {
+      '.js': ['.js', '.ts'],
+      '.cjs': ['.cjs', '.cts'],
+      '.mjs': ['.mjs', '.mts'],
+    },
   },
   output: {
     // Creates and names bundles based on 'chunk' names

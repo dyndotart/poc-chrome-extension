@@ -22,7 +22,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://*.etsy.com/*"],
+      "matches": ["https://etsy.com/*", "https://www.etsy.com/*"],
       "js": ["contentScript.js"]
     }
   ],

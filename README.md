@@ -56,6 +56,10 @@ Content scripts are files that run in the context of web pages. By using the sta
 
 Instead of using normal URLs, the `HashRouter` uses the hash (`#`) portion of the URL to manage the "application URL". This is necessary as a Chrome Extension as no actual URLs to navigate to.
 
+## Etsy
+- https://www.youtube.com/watch?v=mzyiqXiscfU
+
+
 ---
 
 # Resources
