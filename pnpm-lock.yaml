@@ -14,6 +14,7 @@ specifiers:
   eslint: ^8.32.0
   eslint-config-prettier: ^8.6.0
   eslint-plugin-prettier: ^4.2.1
+  eslint-plugin-tailwindcss: ^3.8.3
   google-ads-api: ^12.0.1
   html-webpack-plugin: ^5.5.0
   jquery: ^3.6.3
@@ -53,6 +54,7 @@ devDependencies:
   eslint: 8.32.0
   eslint-config-prettier: 8.6.0_eslint@8.32.0
   eslint-plugin-prettier: 4.2.1_cn4lalcyadplruoxa5mhp7j3dq
+  eslint-plugin-tailwindcss: 3.8.3_tailwindcss@3.2.4
   html-webpack-plugin: 5.5.0_webpack@5.75.0
   postcss: 8.4.21
   postcss-loader: 7.0.2_6jdsrmfenkuhhw3gx4zvjlznce
@@ -1203,6 +1205,17 @@ packages:
       eslint-config-prettier: 8.6.0_eslint@8.32.0
       prettier: 2.8.3
       prettier-linter-helpers: 1.0.0
+    dev: true
+
+  /eslint-plugin-tailwindcss/3.8.3_tailwindcss@3.2.4:
+    resolution: {integrity: sha512-wfzfCmc9yONNW+TqfR+QWZ+syFPQ8zMOrIGx500lS4XITEm0HJYGyKh1sC1tQ9+Wmt58bnHzW3Yc31vy5RlJww==}
+    engines: {node: '>=12.13.0'}
+    peerDependencies:
+      tailwindcss: ^3.2.2
+    dependencies:
+      fast-glob: 3.2.12
+      postcss: 8.4.21
+      tailwindcss: 3.2.4_postcss@8.4.21
     dev: true
 
   /eslint-scope/5.1.1:
