@@ -5,7 +5,7 @@ const ERROR = 2;
 /** @type {import('eslint').Linter.Config} */
 module.exports = {
   parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint', 'prettier'],
+  plugins: ['@typescript-eslint', 'prettier', '@physicaldotart'],
   extends: [
     'eslint:recommended',
     'plugin:react/recommended',
@@ -14,11 +14,13 @@ module.exports = {
     'prettier',
     'plugin:tailwindcss/recommended',
   ],
-  ignorePatterns: ['.eslintrc.js'], // https://stackoverflow.com/questions/63002127/parsing-error-parseroptions-project-has-been-set-for-typescript-eslint-parser
+  ignorePatterns: ['.eslintrc.js', 'packages'], // https://stackoverflow.com/questions/63002127/parsing-error-parseroptions-project-has-been-set-for-typescript-eslint-parser
   rules: {
     'no-console': WARNING,
     'no-var': ERROR,
     'prefer-const': WARNING,
     '@typescript-eslint/no-empty-function': WARNING,
+    '@physicaldotart/no-empty-catch': WARNING,
+    '@physicaldotart/no-inline-tailwind': WARNING,
   },
 };
