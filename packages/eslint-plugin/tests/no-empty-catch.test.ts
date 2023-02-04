@@ -1,9 +1,11 @@
-const { RuleTester } = require('eslint');
-const noEmptyCatchRule = require('../rules/no-empty-catch');
+import { RuleTester } from 'eslint';
+import rule, { RULE_NAME } from '../src/rules/no-empty-catch';
 
-const ruleTester = new RuleTester();
+const ruleTester: RuleTester = new RuleTester({
+  parser: require.resolve('@typescript-eslint/parser'),
+});
 
-ruleTester.run('no-empty-catch', noEmptyCatchRule, {
+ruleTester.run(RULE_NAME, rule as any, {
   valid: [
     {
       code: 'try { foo() } catch (e) { bar() }',
