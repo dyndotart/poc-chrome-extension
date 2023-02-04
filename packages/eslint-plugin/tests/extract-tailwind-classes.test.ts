@@ -37,7 +37,7 @@ ruleTester.run(RULE_NAME, rule as any, {
          
          const About: React.FC = () => {
            return (
-             <div>
+             <div className="flex items-center extract-[Container]">
                <p id="text1" className="text-3xl text-green-500 extract-[Text1]">About</p>
              </div>
            );
@@ -50,15 +50,23 @@ ruleTester.run(RULE_NAME, rule as any, {
          
          const About: React.FC = () => {
            return (
-             <div>
+             <div className={Container}>
                <p id="text1" className={Text1}>About</p>
              </div>
            );
          };
          
          export default About;
+
+         const Container = "flex items-center";
+
+         const Text1 = "text-3xl text-green-500";
       `,
-      errors: [{ messageId: 'extracted' }],
+      errors: [
+        { messageId: 'extracted' },
+        { messageId: 'extracted' },
+        { messageId: 'extracted' },
+      ],
     },
   ],
 });

@@ -10,7 +10,6 @@
 //------------------------------------------------------------------------------
 
 import { createEslintRule } from '../utils/create-eslint-rule';
-import { ESLintUtils } from '@typescript-eslint/utils';
 
 //------------------------------------------------------------------------------
 // Constants
@@ -39,7 +38,7 @@ export default createEslintRule<TOptions, TMessageIds>({
   meta: {
     type: 'suggestion',
     docs: {
-      description: 'Extract TAilwind classes from className HTML attribute.',
+      description: 'Extract Tailwind classes from className HTML attribute.',
       recommended: 'warn',
     },
     schema: [], // No options
@@ -109,6 +108,44 @@ export default createEslintRule<TOptions, TMessageIds>({
             messageId: 'extracted',
             fix: (fixer) => {
               return fixer.replaceText(node, `className={${identifier}}`);
+            },
+          });
+        }
+      },
+      // Adding the TailwindCSS classes to the end of the file in each JSXAttribute Listener fix() method,
+      // didn't work properly if there where multiple fixes to do,
+      // so I collect the to do fixes and then add them at the end of the file in a batch on 'Program:exit'.
+      // https://github.com/eslint/eslint/discussions/16855
+      'Program:exit': (node) => {
+        if (Object.keys(extractedTailwindClasses).length > 0) {
+          context.report({
+            node,
+            messageId: 'extracted',
+            fix: (fixer) => {
+              const ast = context.getSourceCode().ast;
+
+              // Add TailwindCss classes to end of the file (in a batch)
+              const lastNode = ast.body[ast.body.length - 1];
+              const toInsertCode = Object.keys(extractedTailwindClasses).reduce(
+                (previousValue, currentValue) => {
+                  // Adds a new code block with a constant declaration for the extracted Tailwind class
+                  previousValue =
+                    previousValue +
+                    `\n\n${Array(lastNode.loc.start.column + 1).join(
+                      ' '
+                    )}const ${currentValue} = "${extractedTailwindClasses[
+                      currentValue
+                    ].join(' ')}";`;
+
+                  // Remove the extracted Tailwind class entry from the stored list
+                  delete extractedTailwindClasses[currentValue];
+
+                  return previousValue;
+                },
+                ''
+              );
+
+              return fixer.insertTextAfter(lastNode, toInsertCode);
             },
           });
         }

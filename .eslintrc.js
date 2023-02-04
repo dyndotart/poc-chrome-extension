@@ -21,6 +21,6 @@ module.exports = {
     'prefer-const': WARNING,
     '@typescript-eslint/no-empty-function': WARNING,
     '@physicaldotart/no-empty-catch': WARNING,
-    '@physicaldotart/no-inline-tailwind': WARNING,
+    '@physicaldotart/extract-tailwind-classes': WARNING,
   },
 };

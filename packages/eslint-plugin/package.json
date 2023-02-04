@@ -13,18 +13,16 @@
   "license": "MIT",
   "main": "index.js",
   "scripts": {
+    "build": "shx rm -rf dist && tsc",
     "install:clean": "shx rm -rf node_modules && pnpm install",
     "test": "jest"
   },
   "dependencies": {
-    "@babel/generator": "^7.20.14",
-    "@babel/parser": "^7.20.13",
     "@typescript-eslint/utils": "^5.50.0",
     "lodash.get": "^4.4.2",
     "requireindex": "^1.2.0"
   },
   "devDependencies": {
-    "@types/babel__generator": "^7.6.4",
     "@types/lodash.get": "^4.4.7",
     "@typescript-eslint/eslint-plugin": "^5.50.0",
     "@typescript-eslint/parser": "^5.50.0",
