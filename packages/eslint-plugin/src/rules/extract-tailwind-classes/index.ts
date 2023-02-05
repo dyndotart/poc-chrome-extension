@@ -9,24 +9,12 @@
 // Requirements
 //------------------------------------------------------------------------------
 
-import { createEslintRule } from '../utils/create-eslint-rule';
-
-//------------------------------------------------------------------------------
-// Constants
-//------------------------------------------------------------------------------
-
-export const RULE_NAME = 'extract-tailwind-classes';
-export const EXTRACT_IDENTIFIER_REGEX = /extract-\[.+\]/;
-
-//--------------------------------------------------------------------------
-// Helpers
-//--------------------------------------------------------------------------
-
-function extractStringBetweenBrackets(value: string): string {
-  const startIndex = value.indexOf('[') + 1;
-  const endIndex = value.indexOf(']');
-  return value.substring(startIndex, endIndex);
-}
+import { createEslintRule } from '../../utils/create-eslint-rule';
+import { EXTRACT_IDENTIFIER_REGEX, RULE_NAME } from './constants';
+import { getTailwindConfigPath, getTailwindContext } from './tailwindcss';
+import { extractStringBetweenBrackets } from './helper';
+import { TOptions, TMessageIds } from './types';
+import { TTailwindContext } from 'tailwindcss/lib/lib/setupContextUtils';
 
 //------------------------------------------------------------------------------
 // Rule Definition
@@ -41,15 +29,41 @@ export default createEslintRule<TOptions, TMessageIds>({
       description: 'Extract Tailwind classes from className HTML attribute.',
       recommended: 'warn',
     },
-    schema: [], // No options
+    schema: [
+      {
+        type: 'object',
+        properties: {
+          tailwindConfig: {
+            type: 'string',
+          },
+        },
+        additionalProperties: false,
+      },
+    ], // No options
     messages: {
       extracted: 'Inline Tailwind is not allowed.',
     },
     fixable: 'code',
   },
-  defaultOptions: [],
+  defaultOptions: [{}],
   create: (context) => {
     const extractedTailwindClasses: Record<string, string[]> = {};
+
+    // Get Tailwind Context
+    const tailwindConfigPath = getTailwindConfigPath(context.options);
+    let tailwindContext: TTailwindContext | null = null;
+    if (tailwindConfigPath != null) {
+      tailwindContext = getTailwindContext(tailwindConfigPath);
+    } else {
+      console.warn("Failed to resolve path to 'tailwind.config.js'!");
+    }
+    if (tailwindContext == null) {
+      console.warn(
+        `Failed to load 'tailwind.config.js' from '${tailwindConfigPath}'!`
+      );
+    }
+
+    console.log(tailwindContext);
 
     return {
       // Start at the "JSXAttribute" AST Node Type,
@@ -155,8 +169,8 @@ export default createEslintRule<TOptions, TMessageIds>({
 });
 
 //------------------------------------------------------------------------------
-// Types
+// Exports
 //------------------------------------------------------------------------------
 
-type TMessageIds = 'extracted';
-type TOptions = [];
+export * from './constants';
+export * from './types';

@@ -1,18 +1,20 @@
-'use strict';
-
 //------------------------------------------------------------------------------
 // Requirements
 //------------------------------------------------------------------------------
 
-const requireIndex = require('requireindex');
-const obj = requireIndex(__dirname + '/rules');
-const rules = {};
-Object.keys(obj).forEach(
-  (ruleName) => (rules[ruleName] = obj[ruleName].default)
+import requireIndex from 'requireindex';
+
+// Get absolute path of the 'rules' directory
+const rulesObject = requireIndex(__dirname + '/rules');
+
+// Add default exports of each file (ESLint Rule) to the rules object
+const rules: Record<string, any> = {};
+Object.keys(rules).forEach(
+  (ruleName) => (rules[ruleName] = rulesObject[ruleName].default)
 );
 
 //------------------------------------------------------------------------------
 // Plugin Definition
 //------------------------------------------------------------------------------
 
-module.exports = { rules };
+export { rules };

@@ -2,7 +2,7 @@ import React from 'react';
 
 const About: React.FC = () => {
   return (
-    <div>
+    <div className={Container}>
       <p className={Text}>About</p>
     </div>
   );
@@ -11,3 +11,5 @@ const About: React.FC = () => {
 export default About;
 
 const Text = 'text-3xl text-green-500';
+
+const Container = 'flex items-center';
