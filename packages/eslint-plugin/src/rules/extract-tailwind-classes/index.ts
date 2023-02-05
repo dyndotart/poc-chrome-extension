@@ -11,8 +11,14 @@
 
 import { createEslintRule } from '../../utils/create-eslint-rule';
 import { EXTRACT_IDENTIFIER_REGEX, RULE_NAME } from './constants';
-import { getTailwindConfigPath, getTailwindContext } from './tailwindcss';
-import { extractStringBetweenBrackets } from './helper';
+import {
+  buildInlineClassName,
+  getIdentifierFromClassName,
+  getTailwindConfigPath,
+  getTailwindContext,
+  sortTailwindClassList,
+  splitClassName,
+} from './tailwindcss';
 import { TOptions, TMessageIds } from './types';
 import { TTailwindContext } from 'tailwindcss/lib/lib/setupContextUtils';
 
@@ -41,7 +47,9 @@ export default createEslintRule<TOptions, TMessageIds>({
       },
     ], // No options
     messages: {
-      extracted: 'Inline Tailwind is not allowed.',
+      invalidInline:
+        'Invalid inline TailwindCSS class names with extracted key.',
+      invalidOrder: 'Invalid TailwindCSS class names order!',
     },
     fixable: 'code',
   },
@@ -62,8 +70,6 @@ export default createEslintRule<TOptions, TMessageIds>({
         `Failed to load 'tailwind.config.js' from '${tailwindConfigPath}'!`
       );
     }
-
-    console.log(tailwindContext);
 
     return {
       // Start at the "JSXAttribute" AST Node Type,
@@ -93,33 +99,52 @@ export default createEslintRule<TOptions, TMessageIds>({
           return;
         }
 
-        // Check wether TailwindCSS should actually be extracted
-        if (!EXTRACT_IDENTIFIER_REGEX.test(jsxLiteral.value)) {
+        // Split className and extract outsource identifier
+        const { className, identifier } = getIdentifierFromClassName(
+          jsxLiteral.value
+        );
+        const splitted = splitClassName(className);
+        if (splitted == null || splitted.classes.length <= 0) {
           return;
         }
 
-        // Extract identifier & replace them with '' in the literal value
-        const identifiers = EXTRACT_IDENTIFIER_REGEX.exec(jsxLiteral.value);
-        if (identifiers == null || identifiers.length <= 0) {
-          return;
+        // Just sort if no identifier present
+        if (identifier == null && tailwindContext != null) {
+          const sortedClasses = sortTailwindClassList(
+            splitted.classes,
+            tailwindContext
+          );
+
+          if (sortedClasses.join('') !== splitted.classes.join('')) {
+            context.report({
+              node,
+              messageId: 'invalidOrder',
+              fix: (fixer) => {
+                return fixer.replaceTextRange(
+                  jsxLiteral.range,
+                  buildInlineClassName(splitted.classes, splitted.whitespaces)
+                );
+              },
+            });
+          }
         }
 
-        // Extract relevant values like Tailwind classes and the identifier value
-        const identifier = extractStringBetweenBrackets(identifiers[0]);
-        const value = jsxLiteral.value
-          .replace(EXTRACT_IDENTIFIER_REGEX, '')
-          .replace(/\s+/g, ' ') // Remove extra white space, tabs and line breaks
-          .trim();
-        const tailwindClasses = value.split(' ');
-
-        if (tailwindClasses.length > 0) {
+        // Sort and extract if identifier present
+        if (identifier != null) {
           // Store classes to extract them in another event listener
-          extractedTailwindClasses[identifier] = tailwindClasses;
+          if (tailwindContext != null) {
+            extractedTailwindClasses[identifier] = sortTailwindClassList(
+              splitted.classes,
+              tailwindContext
+            );
+          } else {
+            extractedTailwindClasses[identifier] = splitted.classes;
+          }
 
           // Report the required extraction
           context.report({
             node,
-            messageId: 'extracted',
+            messageId: 'invalidInline',
             fix: (fixer) => {
               return fixer.replaceText(node, `className={${identifier}}`);
             },
@@ -134,7 +159,7 @@ export default createEslintRule<TOptions, TMessageIds>({
         if (Object.keys(extractedTailwindClasses).length > 0) {
           context.report({
             node,
-            messageId: 'extracted',
+            messageId: 'invalidInline',
             fix: (fixer) => {
               const ast = context.getSourceCode().ast;
 

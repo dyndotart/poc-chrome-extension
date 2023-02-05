@@ -19,8 +19,8 @@ declare module 'tailwindcss/lib/lib/setupContextUtils' {
     offsets: any;
     notClassCache: Set<any>;
 
-    getClassList: (classList: string[]) => [string, number][]; // [className, order]
-    getClassOrder: () => any;
+    getClassList: () => any; // [className, order]
+    getClassOrder: (classList: string[]) => [string, number][]; // [className, order]
     getVariants: () => any;
     markInvalidUtilityCandidate: () => any;
     markInvalidUtilityNode: () => any;

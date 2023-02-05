@@ -8,7 +8,10 @@ import {
 import resolveTailwindConfig from 'tailwindcss/resolveConfig';
 import escalade from 'escalade/sync';
 import requireFresh from 'import-fresh';
-import { DEFAULT_TAILWIND_CONFIG_FILE_NAME } from './constants';
+import {
+  DEFAULT_TAILWIND_CONFIG_FILE_NAME,
+  EXTRACT_IDENTIFIER_REGEX,
+} from './constants';
 
 // Based on: https://github.dev/tailwindlabs/prettier-plugin-tailwindcss
 
@@ -85,58 +88,85 @@ export function getTailwindContext(
   return tailwindContext;
 }
 
-function sortClasses(
-  classNames: string,
-  tailwindContext: TTailwindContext,
-  options: { ignoreFirst?: boolean; ignoreLast?: boolean } = {}
-) {
-  options = {
-    ignoreFirst: false,
-    ignoreLast: false,
-    ...options,
+export function getIdentifierFromClassName(className: string): {
+  className: string;
+  identifier: string | null;
+} {
+  const response: { className: string; identifier: string | null } = {
+    className,
+    identifier: null,
   };
 
-  // Check wether there are any classes to sort
-  if (typeof classNames !== 'string' || classNames === '') {
-    return classNames;
+  // Extract identifier value from className and remove it
+  if (EXTRACT_IDENTIFIER_REGEX.test(className)) {
+    const identifiers = EXTRACT_IDENTIFIER_REGEX.exec(className);
+    if (identifiers != null && identifiers.length > 0) {
+      function extractStringBetweenBrackets(value: string): string {
+        const startIndex = value.indexOf('[') + 1;
+        const endIndex = value.indexOf(']');
+        return value.substring(startIndex, endIndex);
+      }
+      response.identifier = extractStringBetweenBrackets(identifiers[0]);
+      response.className = className.replace(EXTRACT_IDENTIFIER_REGEX, '');
+    }
   }
 
-  // Ignore class attributes containing `{{`, to match Prettier behaviour:
-  // https://github.com/prettier/prettier/blob/main/src/language-html/embed.js#L83-L88
-  if (classNames.includes('{{')) {
-    return classNames;
-  }
-
-  let result = '';
-  let parts = classNames.split(/(\s+)/);
-  let classes = parts.filter((_, i) => i % 2 === 0);
-  let whitespace = parts.filter((_, i) => i % 2 !== 0);
-
-  if (classes[classes.length - 1] === '') {
-    classes.pop();
-  }
-
-  let prefix = '';
-  if (options.ignoreFirst) {
-    prefix = `${classes.shift() ?? ''}${whitespace.shift() ?? ''}`;
-  }
-
-  let suffix = '';
-  if (options.ignoreLast) {
-    suffix = `${whitespace.pop() ?? ''}${classes.pop() ?? ''}`;
-  }
-
-  classes = sortClassList(classes, tailwindContext);
-
-  for (let i = 0; i < classes.length; i++) {
-    result += `${classes[i]}${whitespace[i] ?? ''}`;
-  }
-
-  return prefix + result + suffix;
+  return response;
 }
 
-function sortClassList(classList: string[], tailwindContext: TTailwindContext) {
-  let classNamesWithOrder = tailwindContext.getClassList(classList);
+export function splitClassName(className: string): {
+  classes: string[];
+  whitespaces: string[];
+} | null {
+  // Check wether there are any classes to split
+  if (typeof className !== 'string' || className === '') {
+    return null;
+  }
+
+  // Ignore class attributes containing `{{`, to match Prettier behavior:
+  // https://github.com/prettier/prettier/blob/main/src/language-html/embed.js#L83-L88
+  if (className.includes('{{')) {
+    return null;
+  }
+
+  // Split className at each not outer whitespace.
+  // Note whitespaces are intensionally not removed during the split.
+  const parts = className.trim().split(/(\s+)/);
+
+  return {
+    classes: parts.filter((_, i) => i % 2 === 0),
+    whitespaces: parts.filter((_, i) => i % 2 !== 0),
+  };
+}
+
+export function buildInlineClassName(
+  classes: string[],
+  whitespaces: string[] = []
+) {
+  let result = '';
+  for (let i = 0; i < classes.length; i++) {
+    result += `${classes[i]}${whitespaces[i] ?? ''}`;
+  }
+  return result;
+}
+
+export function sortTailwindClassList(
+  classList: string[],
+  tailwindContext: TTailwindContext
+) {
+  if (tailwindContext.getClassOrder == null) {
+    console.warn(
+      "No sorting applied! You've an old TailwindCSS version which is not supported by this eslint-plugin."
+    );
+    return classList;
+  }
+  const classNamesWithOrder = tailwindContext.getClassOrder(classList);
+
+  function bigSign(bigIntValue: any) {
+    // @ts-ignore
+    return (bigIntValue > 0n) - (bigIntValue < 0n);
+  }
+
   return classNamesWithOrder
     .sort(([, a], [, z]) => {
       if (a === z) return 0;
@@ -144,7 +174,7 @@ function sortClassList(classList: string[], tailwindContext: TTailwindContext) {
       // if (z === null) return options.unknownClassPosition === 'start' ? 1 : -1
       if (a === null) return -1;
       if (z === null) return 1;
-      return a - z;
+      return bigSign(a - z);
     })
-    .map(([className]) => className);
+    .map(([className, _]) => className);
 }
