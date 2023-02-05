@@ -32,46 +32,44 @@ ruleTester.run(RULE_NAME, rule as any, {
   ],
   invalid: [
     {
-      code: `<div className={"first:flex animate-spin custom container"}>Using official sorting</div>`,
-      output: `<div className={"custom container animate-spin first:flex"}>Using official sorting</div>`,
-      errors: [{ messageId: 'invalidOrder' }],
+      code: `
+          import React from 'react';
+  
+          const About: React.FC = () => {
+            return (
+              <div className="first:flex animate-spin custom container extract-[Container]">
+                <p id="text1" className="sm:py-5 p-4 sm:px-7 lg:p-8 extract-[Text1]">About</p>
+                <p id="text2" className="lg:box-border box-content">Me</p>
+              </div>
+            );
+          };
+  
+          export default About;
+       `,
+      output: `
+          import React from 'react';
+  
+          const About: React.FC = () => {
+            return (
+              <div className={Container}>
+                <p id="text1" className={Text1}>About</p>
+                <p id="text2" className="box-content lg:box-border">Me</p>
+              </div>
+            );
+          };
+  
+          export default About;
+
+          const Container = "custom container animate-spin first:flex";
+
+          const Text1 = "p-4 sm:py-5 sm:px-7 lg:p-8";
+       `,
+      errors: [
+        { messageId: 'invalidInline' },
+        { messageId: 'invalidInline' },
+        { messageId: 'invalidInline' },
+        { messageId: 'invalidOrder' },
+      ],
     },
-    // {
-    //   code: `
-    //      import React from 'react';
-    //
-    //      const About: React.FC = () => {
-    //        return (
-    //          <div className="flex items-center extract-[Container]">
-    //            <p id="text1" className="text-gray-700 shadow-md p-3 border-gray-300 ml-4 h-24 flex border-2 extract-[Text1]">About</p>
-    //          </div>
-    //        );
-    //      };
-    //
-    //      export default About;
-    //   `,
-    //   output: `
-    //      import React from 'react';
-    //
-    //      const About: React.FC = () => {
-    //        return (
-    //          <div className={Container}>
-    //            <p id="text1" className={Text1}>About</p>
-    //          </div>
-    //        );
-    //      };
-    //
-    //      export default About;
-
-    //      const Container = "flex items-center";
-
-    //      const Text1 = "ml-4 flex h-24 border-2 border-gray-300 p-3 text-gray-700 shadow-md";
-    //   `,
-    //   errors: [
-    //     { messageId: 'invalidInline' },
-    //     { messageId: 'invalidInline' },
-    //     { messageId: 'invalidInline' },
-    //   ],
-    // },
   ],
 });
