@@ -27,6 +27,8 @@
     "requireindex": "^1.2.0"
   },
   "devDependencies": {
+    "@jest/globals": "^29.4.1",
+    "@types/jest": "^29.4.0",
     "@types/lodash.get": "^4.4.7",
     "@types/object-hash": "^3.0.2",
     "@types/requireindex": "^1.2.0",

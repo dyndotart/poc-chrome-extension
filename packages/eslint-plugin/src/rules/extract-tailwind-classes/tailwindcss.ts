@@ -12,6 +12,7 @@ import {
   DEFAULT_TAILWIND_CONFIG_FILE_NAME,
   EXTRACT_IDENTIFIER_REGEX,
 } from './constants';
+import { isBlank } from '../../utils/helper';
 
 // Based on: https://github.dev/tailwindlabs/prettier-plugin-tailwindcss
 
@@ -88,7 +89,7 @@ export function getTailwindContext(
   return tailwindContext;
 }
 
-export function getIdentifierFromClassName(className: string): {
+export function getOutsourceIdentifierFromClassName(className: string): {
   className: string;
   identifier: string | null;
 } {
@@ -117,9 +118,11 @@ export function getIdentifierFromClassName(className: string): {
 export function splitClassName(className: string): {
   classes: string[];
   whitespaces: string[];
+  suffix: string;
+  prefix: string;
 } | null {
   // Check wether there are any classes to split
-  if (typeof className !== 'string' || className === '') {
+  if (typeof className !== 'string' || isBlank(className)) {
     return null;
   }
 
@@ -129,13 +132,33 @@ export function splitClassName(className: string): {
     return null;
   }
 
-  // Split className at each not outer whitespace.
+  const SEPARATOR_REGEX = /(\$\{[^}]*\}|\s+)/;
+
+  // Split className at each whitespace.
   // Note whitespaces are intensionally not removed during the split.
-  const parts = className.trim().split(/(\s+)/);
+  const parts = className.split(SEPARATOR_REGEX).filter((part) => part !== '');
+
+  // Handle head & tail space which is relevant when having each class in a line
+  const headSpace = SEPARATOR_REGEX.test(parts[0]);
+  const tailSpace = SEPARATOR_REGEX.test(parts[parts.length - 1]);
+  let prefix = '';
+  if (headSpace) {
+    prefix = `${parts.shift() ?? ''}`;
+  }
+  let suffix = '';
+  if (tailSpace) {
+    suffix = `${parts.pop() ?? ''}`;
+  }
+
+  // Separate classes from whitespaces
+  const classes = parts.filter((_, i) => i % 2 === 0);
+  const whitespaces = parts.filter((_, i) => i % 2 !== 0);
 
   return {
-    classes: parts.filter((_, i) => i % 2 === 0),
-    whitespaces: parts.filter((_, i) => i % 2 !== 0),
+    classes,
+    whitespaces,
+    suffix,
+    prefix,
   };
 }
 
@@ -148,6 +171,19 @@ export function buildInlineClassName(
     result += `${classes[i]}${whitespaces[i] ?? ''}`;
   }
   return result;
+}
+
+export function buildOutsourcedClassName(
+  classes: string[],
+  identifier: string,
+  columnSpaceLeft: number
+): string {
+  const columnSpaceLeftConst = Array(columnSpaceLeft).join(' ');
+  const columnSpaceLeftClassName = Array(columnSpaceLeft + 2).join(' ');
+
+  return `${columnSpaceLeftConst}const ${identifier} = \`\n${columnSpaceLeftClassName}${classes.join(
+    `\n${columnSpaceLeftClassName}`
+  )}\n${columnSpaceLeftConst}\`;`;
 }
 
 export function sortTailwindClassList(

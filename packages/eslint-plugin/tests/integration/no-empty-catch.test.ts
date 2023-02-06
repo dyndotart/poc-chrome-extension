@@ -1,5 +1,5 @@
 import { RuleTester } from 'eslint';
-import rule, { RULE_NAME } from '../src/rules/no-empty-catch';
+import rule, { RULE_NAME } from '../../src/rules/no-empty-catch';
 
 const ruleTester: RuleTester = new RuleTester({
   parser: require.resolve('@typescript-eslint/parser'),

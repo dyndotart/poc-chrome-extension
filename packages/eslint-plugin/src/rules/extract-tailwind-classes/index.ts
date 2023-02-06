@@ -10,10 +10,11 @@
 //------------------------------------------------------------------------------
 
 import { createEslintRule } from '../../utils/create-eslint-rule';
-import { EXTRACT_IDENTIFIER_REGEX, RULE_NAME } from './constants';
+import { RULE_NAME } from './constants';
 import {
   buildInlineClassName,
-  getIdentifierFromClassName,
+  buildOutsourcedClassName,
+  getOutsourceIdentifierFromClassName,
   getTailwindConfigPath,
   getTailwindContext,
   sortTailwindClassList,
@@ -75,8 +76,6 @@ export default createEslintRule<TOptions, TMessageIds>({
       // Start at the "JSXAttribute" AST Node Type,
       // as we know that the "className" is a JSX attribute
       JSXAttribute: (node) => {
-        console.log("Start TailwindCSS 'className' extraction");
-
         // Check wether its a relevant JSXAttribute
         if (
           node.name.type !== 'JSXIdentifier' ||
@@ -99,8 +98,8 @@ export default createEslintRule<TOptions, TMessageIds>({
           return;
         }
 
-        // Split className and extract outsource identifier
-        const { className, identifier } = getIdentifierFromClassName(
+        // Split className into classes & spaces and extract outsource identifier
+        const { className, identifier } = getOutsourceIdentifierFromClassName(
           jsxLiteral.value
         );
         const splitted = splitClassName(className);
@@ -169,18 +168,22 @@ export default createEslintRule<TOptions, TMessageIds>({
               // Add TailwindCss classes to end of the file (in a batch)
               const lastNode = ast.body[ast.body.length - 1];
               const toInsertCode = Object.keys(extractedTailwindClasses).reduce(
-                (previousValue, currentValue) => {
-                  // Adds a new code block with a constant declaration for the extracted Tailwind class
-                  previousValue =
-                    previousValue +
-                    `\n\n${Array(lastNode.loc.start.column + 1).join(
-                      ' '
-                    )}const ${currentValue} = "${extractedTailwindClasses[
-                      currentValue
-                    ].join(' ')}";`;
+                (previousValue, identifier) => {
+                  const classes = extractedTailwindClasses[identifier];
+
+                  // Add new code block with a constant declaration for the extracted Tailwind class
+                  if (classes != null) {
+                    previousValue =
+                      previousValue +
+                      `\n\n${buildOutsourcedClassName(
+                        classes,
+                        identifier,
+                        lastNode.loc.start.column + 1
+                      )}`;
+                  }
 
                   // Remove the extracted Tailwind class entry from the stored list
-                  delete extractedTailwindClasses[currentValue];
+                  delete extractedTailwindClasses[identifier];
 
                   return previousValue;
                 },

@@ -1,5 +1,5 @@
 import { RuleTester } from 'eslint';
-import rule, { RULE_NAME } from '../src/rules/extract-tailwind-classes';
+import rule, { RULE_NAME } from '../../src/rules/extract-tailwind-classes';
 
 const ruleTester: RuleTester = new RuleTester({
   parser: require.resolve('@typescript-eslint/parser'),
@@ -31,6 +31,14 @@ ruleTester.run(RULE_NAME, rule as any, {
     // },
   ],
   invalid: [
+    // Sorting Tests
+    {
+      code: `<div class="w-12 lg:w-6 w-12">removeDuplicates: false</div>`,
+      output: `<div class="w-12 w-12 lg:w-6">removeDuplicates: false</div>`,
+      errors: [{ messageId: 'invalidOrder' }],
+    },
+
+    // Outsourcing Tests
     {
       code: `
           import React from 'react';
@@ -60,9 +68,19 @@ ruleTester.run(RULE_NAME, rule as any, {
   
           export default About;
 
-          const Container = "custom container animate-spin first:flex";
+          const Container = \`
+            custom
+            container
+            animate-spin
+            first:flex
+          \`;
 
-          const Text1 = "p-4 sm:py-5 sm:px-7 lg:p-8";
+          const Text1 = \`
+            p-4
+            sm:py-5
+            sm:px-7
+            lg:p-8
+          \`;
        `,
       errors: [
         { messageId: 'invalidInline' },

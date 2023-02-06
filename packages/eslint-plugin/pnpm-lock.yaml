@@ -1,6 +1,8 @@
 lockfileVersion: 5.4
 
 specifiers:
+  '@jest/globals': ^29.4.1
+  '@types/jest': ^29.4.0
   '@types/lodash.get': ^4.4.7
   '@types/object-hash': ^3.0.2
   '@types/requireindex': ^1.2.0
@@ -28,6 +30,8 @@ dependencies:
   requireindex: 1.2.0
 
 devDependencies:
+  '@jest/globals': 29.4.1
+  '@types/jest': 29.4.0
   '@types/lodash.get': 4.4.7
   '@types/object-hash': 3.0.2
   '@types/requireindex': 1.2.0
@@ -765,6 +769,13 @@ packages:
     resolution: {integrity: sha512-c3mAZEuK0lvBp8tmuL74XRKn1+y2dcwOUpH7x4WrF6gk1GIgiluDRgMYQtw2OFcBvAJWlt6ASU3tSqxp0Uu0Aw==}
     dependencies:
       '@types/istanbul-lib-report': 3.0.0
+    dev: true
+
+  /@types/jest/29.4.0:
+    resolution: {integrity: sha512-VaywcGQ9tPorCX/Jkkni7RWGFfI11whqzs8dvxF41P17Z+z872thvEvlIbznjPJ02kl1HMX3LmLOonsj2n7HeQ==}
+    dependencies:
+      expect: 29.4.1
+      pretty-format: 29.4.1
     dev: true
 
   /@types/json-schema/7.0.11:
